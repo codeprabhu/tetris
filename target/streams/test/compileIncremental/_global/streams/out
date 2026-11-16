@@ -1,0 +1,6 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 24 products, 15 sources, 9 libraries
+[debug] current source = Set(${BASE}/src/test/scala/extetris/api/APITest.scala, ${BASE}/src/test/scala/extetris/persistence/PersistenceTest.scala, ${BASE}/src/test/scala/extetris/pieces/PieceRegistryTest.scala, ${BASE}/src/test/scala/extetris/pieces/PieceRotationTest.scala, ${BASE}/src/test/scala/extetris/pieces/PieceTest.scala, ${BASE}/src/test/scala/extetris/config/ConfigTest.scala, ${BASE}/src/test/scala/extetris/generation/RandomStateTest.scala, ${BASE}/src/test/scala/extetris/engine/EngineTest.scala, ${BASE}/src/test/scala/extetris/examples/ExampleVariantsTest.scala, ${BASE}/src/test/scala/extetris/generation/GenerationTest.scala, ${BASE}/src/test/scala/extetris/replay/ReplayTest.scala, ${BASE}/src/test/scala/extetris/model/CellTest.scala, ${BASE}/src/test/scala/extetris/pieces/PieceDefinitionTest.scala, ${BASE}/src/test/scala/extetris/board/BoardTest.scala, ${BASE}/src/test/scala/extetris/model/PositionTest.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] No changes

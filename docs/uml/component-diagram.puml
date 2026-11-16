@@ -1,0 +1,117 @@
+@startuml
+' ExTetris Platform - Component Diagram
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 20
+
+package "ExTetris Platform" {
+  [GameRunner] as Runner
+  [GameEngine] as Engine
+  [PieceGenerator] as Generator
+  [GameSerializer] as Serializer
+  [GamePersistence] as Persistence
+  [ReplayPlayer] as ReplayPlayer
+  [ExTetrisAPI] as API
+  
+  package "GUI" {
+    [MainApp] as MainApp
+    [MainMenuScene] as MainMenu
+    [GameScene] as GameScene
+    [SettingsScene] as Settings
+  }
+  
+  package "Domain Model" {
+    [GameState] as GameState
+    [Board] as Board
+    [Piece] as Piece
+    [VariantConfig] as VariantConfig
+    [RandomState] as RandomState
+  }
+  
+  package "Pieces" {
+    [PieceRegistry] as Registry
+    [PieceDefinition] as Def
+    [StandardPieces] as StdPieces
+    [CustomPieces] as CustPieces
+  }
+}
+
+' External
+[User] as User
+[File System] as FS
+[JSON Config] as JSONConfig
+
+' Relationships
+User --> MainApp : launches
+MainApp --> MainMenu : shows
+MainMenu --> Runner : creates on "Start Game"
+MainMenu --> Settings : shows settings
+MainMenu --> JSONConfig : loads variant
+
+GameScene <-- Runner : subscribes to state
+GameScene --> Runner : handles input
+Runner --> Engine : step(state, input)
+Runner --> Persistence : save/load
+Runner --> Generator : spawn pieces
+Runner --> API : high-level operations
+
+Engine --> GameState : reads/writes
+Engine --> Board : collision, placement, line clear
+Engine --> Piece : movement, rotation
+Engine --> VariantConfig : rules
+Engine --> RandomState : deterministic RNG
+Engine --> Generator : next piece
+
+Generator --> Registry : enabled pieces
+Generator --> RandomState : seeded generation
+Registry --> Def : piece definitions
+StdPieces --> Def : 7 tetrominoes
+CustPieces --> Def : 3 custom pieces
+
+API --> Engine : step()
+API --> GameState : inspection
+API --> Serializer : serialize/deserialize
+API --> Persistence : save/load
+API --> ReplayPlayer : replay
+API --> Registry : piece management
+API --> VariantConfig : builders
+API --> ScoringConfig : builders
+API --> LevelConfig : builders
+API --> PieceGenerationConfig : builders
+
+Serializer --> GameState : JSON encoding
+Serializer --> VariantConfig : JSON encoding
+Serializer --> RandomState : JSON encoding
+Serializer --> Board : JSON encoding
+Serializer --> Piece : JSON encoding
+Persistence --> Serializer : uses
+Persistence --> FS : file I/O
+
+ReplayPlayer --> Replay : reads
+ReplayPlayer --> Engine : replays steps
+ReplayPlayer --> API : newGame()
+
+VariantConfig --> ScoringConfig
+VariantConfig --> LevelConfig
+VariantConfig --> PieceGenerationConfig
+VariantConfig --> Registry : enabled pieces
+
+GameState --> Board
+GameState --> Piece
+GameState --> VariantConfig
+GameState --> RandomState
+
+Board --> Piece : collision, placement
+
+' Styling
+skinparam component {
+  BackgroundColor<<gui>> #E8F5E9
+  BackgroundColor<<engine>> #E3F2FD
+  BackgroundColor<<model>> #FFF3E0
+  BackgroundColor<<pieces>> #FCE4EC
+  BackgroundColor<<api>> #F3E5F5
+}
+
+@enduml

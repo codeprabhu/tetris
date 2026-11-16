@@ -1,0 +1,557 @@
+@startuml
+' ExTetris Platform - Class Diagram
+' Render with: plantuml class-diagram.puml
+
+skinparam classAttributeIconSize 0
+skinparam nodesep 10
+skinparam ranksep 10
+
+package "extetris.model" {
+  class Position {
+    + x: Int
+    + y: Int
+    + +(other): Position
+    + -(other): Position
+    + *(scalar): Position
+    + translate(dx, dy): Position
+    + rotateCW(origin): Position
+    + rotateCCW(origin): Position
+    + inBounds(w, h): Boolean
+  }
+
+  enum Cell {
+    Empty
+    Filled(pieceId: PieceId, color: PieceColor)
+  }
+  Cell : + isEmpty: Boolean
+  Cell : + isFilled: Boolean
+  Cell : + pieceId: Option[PieceId]
+  Cell : + color: Option[PieceColor]
+
+  enum GameStatus {
+    Playing
+    Paused
+    GameOver
+    NotStarted
+  }
+
+  enum GameInput {
+    MoveLeft
+    MoveRight
+    MoveDown
+    HardDrop
+    RotateCW
+    RotateCCW
+    Hold
+    Pause
+    Resume
+    Restart
+    Tick
+    ChangeConfig(config: VariantConfig)
+  }
+
+  enum GameEvent {
+    PieceSpawned(piece: Piece)
+    PieceMoved(piece, from, to)
+    PieceRotated(piece, from, to)
+    PieceHardDropped(piece, from, to)
+    PieceLocked(piece)
+    LinesCleared(count, board)
+    ScoreChanged(old, new)
+    LevelChanged(old, new)
+    GameOver(score, level, lines)
+    GamePaused
+    GameResumed
+    GameRestarted
+    ConfigChanged(config)
+    HoldUsed(held, current)
+  }
+
+  class GameState {
+    + board: Board
+    + currentPiece: Option[Piece]
+    + nextPiece: Option[Piece]
+    + heldPiece: Option[PieceDefinition]
+    + canHold: Boolean
+    + score: Long
+    + level: Int
+    + linesCleared: Int
+    + status: GameStatus
+    + config: VariantConfig
+    + randomState: RandomState
+    + dropCounter: Int
+    + dropInterval: Int
+    + lastAction: Option[GameInput]
+    + isPlaying: Boolean
+    + withStatus(s): GameState
+    + withBoard(b): GameState
+    + ...
+  }
+}
+
+package "extetris.pieces" {
+  class PieceId {
+    + value: String
+    + isStandard: Boolean
+    + isCustom: Boolean
+    {static} + I, O, T, S, Z, J, L: PieceId
+    {static} + Single, L3, Plus: PieceId
+  }
+
+  class PieceColor {
+    + r, g, b, a: Double
+    + toScalafxColor(): Color
+    + toHex(): String
+    {static} + StandardColors: Map[PieceId, PieceColor]
+    {static} + forPieceId(id): PieceColor
+  }
+
+  enum RotationBehavior {
+    Full
+    Limited(states: Int)
+    None
+  }
+
+  class PieceRotation {
+    + cells: Set[Position]
+    + origin: Position
+    + rotateCW(): PieceRotation
+    + rotateCCW(): PieceRotation
+    + translate(dx, dy): PieceRotation
+    + width: Int
+    + height: Int
+    + boundingBox: (Int, Int, Int, Int)
+    {static} + fromCells(cells): PieceRotation
+  }
+
+  interface PieceDefinition {
+    + id: PieceId
+    + name: String
+    + color: PieceColor
+    + rotations: Vector[PieceRotation]
+    + behavior: RotationBehavior
+    + rotationCount: Int
+    + initialRotation: PieceRotation
+    + nextRotation(current): PieceRotation
+    + prevRotation(current): PieceRotation
+  }
+
+  class StandardPiece {
+    + id: PieceId
+    + name: String
+    + color: PieceColor
+    + rotations: Vector[PieceRotation]
+    + behavior: RotationBehavior
+  }
+
+  class CustomPiece {
+    + id: PieceId
+    + name: String
+    + color: PieceColor
+    + rotations: Vector[PieceRotation]
+    + behavior: RotationBehavior
+  }
+
+  class Piece {
+    + definition: PieceDefinition
+    + rotation: PieceRotation
+    + position: Position
+    + cells: Set[Position]
+    + move(dx, dy): Piece
+    + moveTo(pos): Piece
+    + rotateCW(): Piece
+    + rotateCCW(): Piece
+    + withRotation(rot): Piece
+    + id: PieceId
+    + color: PieceColor
+    + name: String
+    + boundingBox: (Int, Int, Int, Int)
+    {static} + spawn(def, boardWidth): Piece
+  }
+
+  class PieceRegistry {
+    + definitions: Map[PieceId, PieceDefinition]
+    + enabled: Set[PieceId]
+    + get(id): Option[PieceDefinition]
+    + getEnabled(id): Option[PieceDefinition]
+    + enabledDefinitions: Map[...]
+    + enabledIds: Set[PieceId]
+    + allIds: Set[PieceId]
+    + enable(id): Either[...]
+    + disable(id): PieceRegistry
+    + withDefinition(def): PieceRegistry
+    + withoutDefinition(id): PieceRegistry
+    {static} + default: PieceRegistry
+    {static} + empty: PieceRegistry
+  }
+}
+
+package "extetris.board" {
+  class Board {
+    + width: Int
+    + height: Int
+    + grid: Vector[Vector[Cell]]
+    + cellAt(pos): Option[Cell]
+    + cellAt(x, y): Option[Cell]
+    + isEmpty(pos): Boolean
+    + isOccupied(pos): Boolean
+    + canPlace(piece): Boolean
+    + place(piece): Board
+    + clearLines(): (Board, Int)
+    + heights: Vector[Int]
+    + aggregateHeight: Int
+    + maxHeight: Int
+    + holes: Int
+    + bumpiness: Int
+    + isEmpty: Boolean
+    + isFull: Boolean
+    {static} + empty(w, h): Board
+    {static} + fromGrid(grid): Board
+  }
+}
+
+package "extetris.config" {
+  class VariantConfig {
+    + name: String
+    + boardWidth: Int
+    + boardHeight: Int
+    + enabledPieces: Set[PieceId]
+    + pieceGeneration: PieceGenerationConfig
+    + scoring: ScoringConfig
+    + levelConfig: LevelConfig
+    + initialLevel: Int
+    + allowHold: Boolean
+    + allowHardDrop: Boolean
+    + previewCount: Int
+    + gravityEnabled: Boolean
+    + validate(): Either[ValidationError, VariantConfig]
+    + withEnabledPieces(p): VariantConfig
+    + withBoardSize(w, h): VariantConfig
+    + ...
+    {static} + default: VariantConfig
+    {static} + classic: VariantConfig
+    {static} + extended: VariantConfig
+  }
+
+  class VariantConfigBuilder {
+    - name: String
+    - width, height: Int
+    - enabled: Set[PieceId]
+    - generation: PieceGenerationConfig
+    - scoring: ScoringConfig
+    - levels: LevelConfig
+    - initLevel: Int
+    - hold, hardDrop: Boolean
+    - preview: Int
+    - gravity: Boolean
+    + boardSize(w, h): this
+    + enabledPieces(p): this
+    + pieceGeneration(c): this
+    + scoring(c): this
+    + levelConfig(c): this
+    + initialLevel(l): this
+    + allowHold(b): this
+    + allowHardDrop(b): this
+    + previewCount(n): this
+    + gravity(b): this
+    + build(): VariantConfig
+  }
+
+  class ScoringConfig {
+    + singleLine: Int
+    + doubleLine: Int
+    + tripleLine: Int
+    + tetrisLine: Int
+    + softDropPerCell: Int
+    + hardDropPerCell: Int
+    + levelMultiplier: Boolean
+    + scoreForLines(lines, level): Int
+    + softDropScore(cells): Int
+    + hardDropScore(cells): Int
+    {static} + default: ScoringConfig
+    {static} + classic: ScoringConfig
+  }
+
+  class LevelConfig {
+    + linesPerLevel: Int
+    + initialDropInterval: Int
+    + minDropInterval: Int
+    + dropIntervalDecrease: Int
+    + maxLevel: Int
+    + dropIntervalForLevel(level): Int
+    + levelForLines(lines): Int
+    + linesForLevel(level): Int
+    {static} + default: LevelConfig
+    {static} + fast: LevelConfig
+  }
+
+  class PieceGenerationConfig {
+    + strategy: GenerationStrategy
+    + weights: Map[PieceId, Int]
+    + seed: Option[Long]
+    + bagSize: Int
+    + weightFor(id): Int
+    + hasWeights: Boolean
+    + withWeight(id, w): PieceGenerationConfig
+    + withStrategy(s): PieceGenerationConfig
+    + withSeed(s): PieceGenerationConfig
+    {static} + default: PieceGenerationConfig
+    {static} + uniform(seed): PieceGenerationConfig
+    {static} + weighted(weights, seed): PieceGenerationConfig
+    {static} + bag(size, seed): PieceGenerationConfig
+  }
+
+  enum GenerationStrategy {
+    Uniform
+    Weighted
+    Bag(size: Int)
+    Custom(className: String)
+  }
+
+  class ValidationError {
+    + message: String
+  }
+}
+
+package "extetris.generation" {
+  class RandomState {
+    + seed: Long
+    + state: Long
+    + nextInt(bound): (Int, RandomState)
+    + nextLong(): (Long, RandomState)
+    + nextDouble(): (Double, RandomState)
+    + nextBoolean(): (Boolean, RandomState)
+    + setSeed(seed): RandomState
+    + currentSeed: Long
+    + currentState: Long
+    {static} + fromSeed(seed): RandomState
+    {static} + random(): RandomState
+  }
+
+  interface PieceGenerator {
+    + nextPiece(reg, config, rs): (Option[PieceId], RandomState)
+    + previewPieces(reg, config, rs, count): (List[PieceId], RandomState)
+  }
+
+  class UniformGenerator {
+    {static} + nextPiece(...)
+    {static} + previewPieces(...)
+  }
+
+  class WeightedGenerator {
+    {static} + nextPiece(...)
+    {static} + previewPieces(...)
+  }
+
+  class BagGenerator {
+    + bagSize: Int
+    + nextPiece(...)
+    + previewPieces(...)
+  }
+
+  class PieceGenerator$ {
+    {static} + forStrategy(s): PieceGenerator
+  }
+}
+
+package "extetris.engine" {
+  class GameEngine {
+    {static} + step(state, input): (GameState, List[GameEvent])
+  }
+}
+
+package "extetris.api" {
+  class ExTetrisAPI {
+    {static} + createVariant(config): Either[...]
+    {static} + defaultVariant: VariantConfig
+    {static} + classicVariant: VariantConfig
+    {static} + extendedVariant: VariantConfig
+    {static} + defineStandardPiece(...): PieceDefinition
+    {static} + defineCustomPiece(...): PieceDefinition
+    {static} + newGame(config, seed): GameState
+    {static} + applyInput(state, input): (GameState, List[GameEvent])
+    {static} + tick(state): (GameState, List[GameEvent])
+    {static} + getBoard(state): Board
+    {static} + getCurrentPiece(state): Option[Piece]
+    {static} + getNextPiece(state): Option[Piece]
+    {static} + getHeldPiece(state): Option[PieceDefinition]
+    {static} + getScore(state): Long
+    {static} + getLevel(state): Int
+    {static} + getLinesCleared(state): Int
+    {static} + getStatus(state): GameStatus
+    {static} + getConfig(state): VariantConfig
+    {static} + isGameOver(state): Boolean
+    {static} + isPlaying(state): Boolean
+    {static} + saveGame(state, path): Either[...]
+    {static} + loadGame(path): Either[...]
+    {static} + serializeGame(state): String
+    {static} + deserializeGame(json): Either[...]
+    {static} + recordReplay(state, inputs): Replay
+    {static} + playReplay(replay): List[...]
+    {static} + scoringConfig(...): ScoringConfig
+    {static} + levelConfig(...): LevelConfig
+    {static} + generationConfig(...): PieceGenerationConfig
+    {static} + defaultRegistry: PieceRegistry
+    {static} + emptyRegistry: PieceRegistry
+    {static} + registryFrom(defs): PieceRegistry
+  }
+}
+
+package "extetris.persistence" {
+  class GameSerializer {
+    {static} + serialize(state): String
+    {static} + deserialize(json): Either[Error, GameState]
+  }
+
+  class GamePersistence {
+    {static} + save(state, path): Either[Exception, Unit]
+    {static} + load(path): Either[Exception, GameState]
+    {static} + saveToFile(state, file): Either[...]
+    {static} + loadFromFile(file): Either[...]
+  }
+}
+
+package "extetris.replay" {
+  class Replay {
+    + version: Int
+    + config: VariantConfig
+    + initialRandomState: RandomState
+    + inputs: List[GameInput]
+    + events: List[GameEvent]
+    + addInput(input): Replay
+    + addEvent(event): Replay
+    + withEvents(events): Replay
+    {static} + record(state, inputs): Replay
+    {static} + empty(config, seed): Replay
+    {static} + serialize(replay): String
+    {static} + deserialize(json): Either[Error, Replay]
+    {static} + save(replay, path): Either[...]
+    {static} + load(path): Either[...]
+  }
+
+  class ReplayPlayer {
+    {static} + play(replay): List[(GameState, GameInput, List[GameEvent], GameState)]
+    {static} + playStepByStep(replay): Iterator[...]
+    {static} + verify(replay): Boolean
+  }
+}
+
+package "extetris.runner" {
+  class GameRunner {
+    - currentState: GameState
+    - listeners: List[GameState => Unit]
+    - running: Boolean
+    + state: GameState
+    + isRunning: Boolean
+    + subscribe(listener): () => Unit
+    + start(): Unit
+    + stop(): Unit
+    + pause(): Unit
+    + resume(): Unit
+    + restart(): Unit
+    + handleInput(input): Unit
+    + changeConfig(config): Unit
+    + save(path): Either[...]
+    + load(path): Either[...]
+    {static} + apply(config, seed)(using EC): GameRunner
+    {static} + fromState(state)(using EC): GameRunner
+  }
+}
+
+package "extetris.examples" {
+  class ExampleVariants {
+    {static} + classic: VariantConfig
+    {static} + extended: VariantConfig
+    {static} + mini: VariantConfig
+    {static} + giant: VariantConfig
+    {static} + challenge: VariantConfig
+    {static} + customPieceVariant: VariantConfig
+    {static} + all: Map[String, VariantConfig]
+    {static} + runExample(name): Unit
+  }
+}
+
+' Relationships
+GameState --> Board
+GameState --> Piece
+GameState --> PieceDefinition
+GameState --> VariantConfig
+GameState --> RandomState
+GameState --> GameStatus
+
+Piece --> PieceDefinition
+Piece --> PieceRotation
+Piece --> Position
+
+PieceDefinition --> PieceRotation
+PieceDefinition --> RotationBehavior
+PieceDefinition --> PieceColor
+PieceDefinition --> PieceId
+
+StandardPiece --|> PieceDefinition
+CustomPiece --|> PieceDefinition
+
+PieceRegistry --> PieceDefinition
+PieceRegistry --> PieceId
+
+Board --> Cell
+Cell --> PieceId
+Cell --> PieceColor
+
+VariantConfig --> PieceGenerationConfig
+VariantConfig --> ScoringConfig
+VariantConfig --> LevelConfig
+VariantConfig --> PieceId
+VariantConfigBuilder --> VariantConfig
+
+PieceGenerationConfig --> GenerationStrategy
+PieceGenerationConfig --> PieceId
+
+GameEngine --> GameState
+GameEngine --> GameInput
+GameEngine --> GameEvent
+GameEngine --> Board
+GameEngine --> Piece
+GameEngine --> VariantConfig
+
+ExTetrisAPI --> VariantConfig
+ExTetrisAPI --> GameState
+ExTetrisAPI --> GameInput
+ExTetrisAPI --> GameEvent
+ExTetrisAPI --> Board
+ExTetrisAPI --> Piece
+ExTetrisAPI --> PieceDefinition
+ExTetrisAPI --> PieceId
+ExTetrisAPI --> PieceColor
+ExTetrisAPI --> RotationBehavior
+ExTetrisAPI --> Position
+ExTetrisAPI --> RandomState
+ExTetrisAPI --> ScoringConfig
+ExTetrisAPI --> LevelConfig
+ExTetrisAPI --> PieceGenerationConfig
+ExTetrisAPI --> PieceRegistry
+ExTetrisAPI --> Replay
+
+GameSerializer --> GameState
+GamePersistence --> GameSerializer
+
+Replay --> VariantConfig
+Replay --> RandomState
+Replay --> GameInput
+Replay --> GameEvent
+ReplayPlayer --> Replay
+ReplayPlayer --> GameEngine
+
+GameRunner --> GameState
+GameRunner --> GameEngine
+GameRunner --> GameInput
+GameRunner --> GameEvent
+
+ExampleVariants --> VariantConfig
+ExampleVariants --> ExTetrisAPI
+ExampleVariants --> PieceId
+ExampleVariants --> PieceColor
+ExampleVariants --> RotationBehavior
+ExampleVariants --> Position
+
+@enduml

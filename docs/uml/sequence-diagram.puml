@@ -1,0 +1,181 @@
+@startuml
+' ExTetris Platform - Sequence Diagram: Game Loop
+
+skinparam sequenceMessageAlign center
+skinparam lifelineStrategy solid
+skinparam maxMessageSize 80
+
+actor Player
+participant "GameRunner" as Runner
+participant "GameEngine" as Engine
+participant "GameState" as State
+participant "Board" as Board
+participant "Piece" as Piece
+participant "PieceGenerator" as Gen
+participant "RandomState" as RNG
+participant "GUI (GameScene)" as GUI
+
+== Game Initialization ==
+Player -> MainApp: launch
+MainApp -> MainMenu: show
+Player -> MainMenu: select "Classic ExTetris"
+MainMenu -> Runner: new GameRunner(classicConfig, seed=12345)
+Runner -> State: GameState.initial(config, RandomState.fromSeed(12345))
+Runner -> State: withStatus(Playing)
+Runner -> GUI: subscribe(listener)
+Runner -> Runner: start()
+Runner -> Runner: scheduleTick()
+
+== Game Loop (Auto-drop) ==
+loop every dropInterval ms
+  Runner -> Runner: handleInput(Tick)
+  Runner -> Engine: step(currentState, Tick)
+  
+  alt dropCounter < dropInterval
+    Engine -> State: incrementDropCounter()
+    Engine --> Runner: (newState, [])
+  else dropCounter >= dropInterval
+    Engine -> State: resetDropCounter()
+    Engine -> Piece: move(0, 1)
+    Engine -> Board: canPlace(movedPiece)
+    
+    alt can place
+      Board --> Engine: true
+      Engine -> State: withCurrentPiece(movedPiece)
+      Engine -> State: withLastAction(MoveDown)
+      Engine -> GUI: PieceMoved event
+      Engine --> Runner: (newState, [PieceMoved])
+    else cannot place (lock)
+      Board --> Engine: false
+      Engine -> State: withCurrentPiece(fallenPiece)
+      Engine -> Board: place(piece)
+      Board --> Engine: boardWithPiece
+      Engine -> Board: clearLines()
+      Board --> Engine: (clearedBoard, linesCleared)
+      Engine -> State: withBoard(clearedBoard)
+      Engine -> State: addLinesCleared(linesCleared)
+      Engine -> State: addScore(scoreForLines)
+      Engine -> GUI: PieceLocked, LinesCleared, ScoreChanged
+      
+      alt linesCleared > 0 and levelUp
+        Engine -> State: setLevel(newLevel)
+        Engine -> State: setDropInterval(newInterval)
+        Engine -> GUI: LevelChanged
+      end
+      
+      Engine -> Gen: nextPiece(registry, config, randomState)
+      Gen -> RNG: nextInt(bound)
+      RNG --> Gen: (index, newRNG)
+      Gen --> Engine: (nextPieceId, newRNG)
+      Engine -> State: withRandomState(newRNG)
+      
+      alt next piece can spawn
+        Engine -> Piece: spawn(definition, boardWidth)
+        Engine -> Board: canPlace(newPiece)
+        Board --> Engine: true
+        Engine -> State: withCurrentPiece(newPiece)
+        Engine -> GUI: PieceSpawned
+      else game over (spawn blocked)
+        Engine -> State: withStatus(GameOver)
+        Engine -> GUI: GameOver
+      end
+      
+      Engine --> Runner: (newState, events...)
+    end
+  end
+  
+  Runner -> State: update currentState
+  Runner -> GUI: notifyListeners(newState)
+  GUI -> GUI: render(newState)
+end
+
+== Player Input ==
+Player -> GUI: key press (e.g., LEFT)
+GUI -> Runner: handleInput(MoveLeft)
+Runner -> Engine: step(currentState, MoveLeft)
+Engine -> Piece: move(-1, 0)
+Engine -> Board: canPlace(movedPiece)
+alt can place
+  Board --> Engine: true
+  Engine -> State: withCurrentPiece(movedPiece)
+  Engine --> Runner: (newState, [PieceMoved])
+else cannot place
+  Board --> Engine: false
+  Engine --> Runner: (currentState, [])
+end
+Runner -> GUI: notifyListeners(newState)
+GUI -> GUI: render(newState)
+
+== Hard Drop ==
+Player -> GUI: key press (SPACE)
+GUI -> Runner: handleInput(HardDrop)
+Runner -> Engine: step(currentState, HardDrop)
+loop while can move down
+  Engine -> Piece: move(0, 1)
+  Engine -> Board: canPlace(movedPiece)
+end
+Engine -> State: withCurrentPiece(finalPosition)
+Engine -> Engine: lockPiece() (same as Tick lock logic)
+Engine --> Runner: (newState, [PieceHardDropped, PieceLocked, LinesCleared?, ScoreChanged?, PieceSpawned?])
+Runner -> GUI: notifyListeners(newState)
+GUI -> GUI: render(newState)
+
+== Pause/Resume ==
+Player -> GUI: key press (P)
+alt playing
+  GUI -> Runner: pause()
+  Runner -> Engine: step(state, Pause)
+  Engine -> State: withStatus(Paused)
+  Engine --> Runner: (newState, [GamePaused])
+  Runner -> GUI: notifyListeners
+else paused
+  GUI -> Runner: resume()
+  Runner -> Engine: step(state, Resume)
+  Engine -> State: withStatus(Playing)
+  Engine --> Runner: (newState, [GameResumed])
+  Runner -> Runner: scheduleTick()
+  Runner -> GUI: notifyListeners
+end
+GUI -> GUI: show/hide pause overlay
+
+== Save Game ==
+Player -> GUI: "Save Game" menu
+GUI -> Runner: save("save.json")
+Runner -> Persistence: save(state, "save.json")
+Persistence -> Serializer: serialize(state)
+Serializer -> Serializer: encode all fields to JSON
+Serializer --> Persistence: json string
+Persistence -> FS: write file
+FS --> Persistence: done
+Persistence --> Runner: Right(())
+Runner --> GUI: success
+
+== Load Game ==
+Player -> GUI: "Load Game" menu
+GUI -> Runner: load("save.json")
+Runner -> Persistence: load("save.json")
+Persistence -> FS: read file
+FS --> Persistence: json string
+Persistence -> Serializer: deserialize(json)
+Serializer -> Serializer: decode all fields
+Serializer --> Persistence: GameState
+Persistence --> Runner: Right(state)
+Runner -> State: update currentState
+Runner -> GUI: notifyListeners(state)
+GUI -> GUI: render(state)
+
+== Replay ==
+Player -> GUI: "Replay" menu
+GUI -> ReplayPlayer: play(replay)
+ReplayPlayer -> API: newGame(replay.config, replay.initialRandomState.seed)
+API --> ReplayPlayer: initialState
+loop for each input in replay.inputs
+  ReplayPlayer -> Engine: step(currentState, input)
+  Engine --> ReplayPlayer: (newState, events)
+  ReplayPlayer -> ReplayPlayer: collect (state, input, events, newState)
+  ReplayPlayer -> ReplayPlayer: currentState = newState
+end
+ReplayPlayer --> GUI: List[(state, input, events, newState)]
+GUI -> GUI: animate playback
+
+@enduml

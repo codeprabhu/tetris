@@ -1,0 +1,9 @@
+[error] -- [E029] Pattern Match Exhaustivity Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/board/Board.scala:74:29 
+[error] 74 |    heights.sliding(2).map { case Vector(a, b) => (a - b).abs }.sum
+[error]    |                             ^
+[error]    |match may not be exhaustive.
+[error]    |
+[error]    |It would fail on pattern case: package.Vector(_, _, _, _*), package.Vector(_), package.Vector()
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] one error found

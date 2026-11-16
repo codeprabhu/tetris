@@ -1,0 +1,211 @@
+[debug] Running TaskDef(extetris.pieces.PieceDefinitionTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.model.PositionTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.generation.GenerationTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.pieces.PieceRegistryTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.pieces.PieceRotationTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.api.APITest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.replay.ReplayTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.board.BoardTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.engine.EngineTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.generation.RandomStateTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.config.ConfigTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.model.CellTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.persistence.PersistenceTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.examples.ExampleVariantsTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.pieces.PieceTest, org.scalatest.tools.Framework$$anon$1@2e28a3bd, false, [SuiteSelector])
+[info] ExampleVariantsTest:
+[info] - Classic variant is valid
+[info] - Extended variant is valid
+[info] - Mini variant is valid
+[info] - Giant variant is valid
+[info] - Challenge variant is valid
+[info] - Custom piece variant is valid
+[info] - All variants can create games
+[info] - Run example produces output
+[info] GenerationTest:
+[info] - Uniform generator produces all pieces
+[info] - Weighted generator respects weights
+[info] - Disabled pieces never generated
+[info] - Zero weight pieces never generated
+[info] - Empty registry returns None
+[info] - Deterministic generation with same seed
+[info] - Different seeds produce different sequences
+[info] - Preview pieces
+[info] - Bag generator
+[info] PieceRotationTest:
+[info] - Rotation creation from cells
+[info] - Rotation CW
+[info] - Rotation CCW
+[info] - Rotation translation
+[info] - Width and height calculation
+[info] - Bounding box
+[info] - Distinct rotations for I piece
+[info] - Distinct rotations for O piece (square)
+[info] RandomStateTest:
+[info] - RandomState from seed
+[info] - RandomState random creates different seeds
+[info] - NextInt produces values in range
+[info] - NextInt with bound 1 always returns 0
+[info] - Deterministic sequence with same seed
+[info] - Different seeds produce different sequences
+[info] - NextLong produces values
+[info] - NextDouble produces values in [0, 1)
+[info] - NextBoolean produces both values
+[info] - SetSeed resets state
+[info] PieceDefinitionTest:
+[info] - Standard piece definition - I piece
+[info] - Standard piece definition - O piece
+[info] - Standard piece definition - T piece
+[info] - Custom piece definition - Single
+[info] - Custom piece definition - L3
+[info] - Custom piece definition - Plus
+[info] - Next rotation cycles
+[info] - Previous rotation cycles
+[info] - Custom piece with limited rotation
+[info] - Custom piece with no rotation
+[info] PieceRegistryTest:
+[info] - Default registry contains all standard pieces
+[info] - Get piece definition
+[info] - Get enabled piece definition
+[info] - Enable piece
+[info] - Enable unknown piece fails
+[info] - Disable piece
+[info] - Add custom definition
+[info] - Remove definition
+[info] - Registry from definitions
+[info] PieceTest:
+[info] - Standard piece spawn position
+[info] - O piece spawn position
+[info] - Piece movement
+[info] - Piece rotation CW
+[info] - Piece rotation CCW
+[info] - Piece cells calculation
+[info] - I piece rotation states
+[info] - O piece has no rotation
+[info] - Custom piece - Single
+[info] - Custom piece - L3
+[info] - Custom piece - Plus
+[info] - Piece bounding box
+[info] - Piece ID and color
+[info] CellTest:
+[info] - Empty cell properties
+[info] - Filled cell properties
+[info] - Cell pattern matching
+[info] APITest:
+[info] - Create variant from config
+[info] - Default variants available
+[info] - Define standard piece
+[info] - Define custom piece
+[info] - New game creation
+[info] - Apply input
+[info] - Tick
+[info] - State inspection
+[info] - Serialization roundtrip
+[info] - Replay recording and playback
+[info] - Config builders
+[info] - Piece registry access
+[info] - Custom variant creation without engine modification
+[info] ConfigTest:
+[info] - VariantConfig default validation
+[info] - VariantConfig classic validation
+[info] - VariantConfig extended validation
+[info] - Invalid board width too small
+[info] - Invalid board width too large
+[info] - Invalid board height too small
+[info] - No enabled pieces
+[info] - Negative weight validation
+[info] - Initial level validation
+[info] - Initial level exceeds max
+[info] - Preview count validation
+[info] - ScoringConfig score calculation
+[info] - Classic scoring
+[info] - LevelConfig drop interval
+[info] - LevelConfig level for lines
+[info] - PieceGenerationConfig weightFor
+[info] - VariantConfig builder
+[info] BoardTest:
+[info] - Empty board creation
+[info] - Cell access within bounds
+[info] - Cell access out of bounds
+[info] - Piece placement
+[info] - Piece placement does not modify original board
+[info] - Can place piece on empty board
+[info] - Cannot place piece overlapping occupied cells
+[info] - Cannot place piece out of bounds horizontally
+[info] - Cannot place piece out of bounds vertically (below)
+[info] - Can place piece partially above board (spawn area)
+[info] - Line clearing - single line
+[info] - Line clearing - multiple lines
+[info] - Line clearing - non-adjacent lines
+[info] - Board heights calculation
+[info] - Board holes calculation
+[info] - Board bumpiness calculation
+[info] ReplayTest:
+[info] - Replay records initial state
+[info] - Replay records inputs
+[info] - Replay playback reproduces game
+[info] - Step-by-step replay iterator
+[info] - Replay verification
+[info] - Replay with different seed fails verification
+[info] - Deterministic replay from same seed
+[info] PositionTest:
+[info] - Position addition
+[info] - Position subtraction
+[info] - Position scalar multiplication
+[info] - Position translation
+[info] - Position rotation CW around origin
+[info] - Position rotation CCW around origin
+[info] - Position rotation around custom origin
+[info] - Position inBounds
+[info] EngineTest:
+[info] - New game starts in Playing status with a piece
+[info] - Game starts with piece spawned
+[info] - Left movement
+[info] - Right movement
+[info] - Movement blocked by wall
+[info] - Rotation CW
+[info] - Rotation CCW
+[info] - O piece rotation does nothing
+[info] - Hard drop
+[info] - Piece locks and spawns next
+[info] - Line clear scoring
+[info] - Level progression
+[info] - Game over detection
+[info] - Pause and resume
+[info] - Restart
+[info] - Hold piece
+[info] - Hold disabled by default in classic
+[info] - Configuration change
+[info] - Deterministic execution with same seed
+[info] - Tick advances drop counter
+[info] - Gravity moves piece down
+[info] PersistenceTest:
+[info] - Serialize and deserialize game state
+[info] - Save and load to file
+[info] - Load non-existent file fails
+[info] - Save with invalid path fails
+[info] - Replay serialization
+[info] - Save and load replay
+[info] - Game state with piece on board serializes correctly
+[info] - Game state with held piece serializes correctly
+[info] Run completed in 1 second, 123 milliseconds.
+[info] Total number of tests run: 160
+[info] Suites: completed 15, aborted 0
+[info] Tests: succeeded 160, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	extetris.replay.ReplayTest
+[debug] 	extetris.config.ConfigTest
+[debug] 	extetris.pieces.PieceRotationTest
+[debug] 	extetris.generation.GenerationTest
+[debug] 	extetris.pieces.PieceTest
+[debug] 	extetris.engine.EngineTest
+[debug] 	extetris.examples.ExampleVariantsTest
+[debug] 	extetris.model.CellTest
+[debug] 	extetris.model.PositionTest
+[debug] 	extetris.pieces.PieceRegistryTest
+[debug] 	extetris.pieces.PieceDefinitionTest
+[debug] 	extetris.persistence.PersistenceTest
+[debug] 	extetris.api.APITest
+[debug] 	extetris.board.BoardTest
+[debug] 	extetris.generation.RandomStateTest
