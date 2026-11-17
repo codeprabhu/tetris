@@ -42,19 +42,38 @@ object ExTetrisAPI:
   def newGame(config: VariantConfig, seed: Option[Long], customRegistry: Option[extetris.pieces.PieceRegistry]): GameState =
     val randomState = seed.map(RandomState.fromSeed).getOrElse(RandomState.random())
     var state = GameState.initial(config, randomState).withStatus(extetris.model.GameStatus.Playing)
-    // Spawn first piece
-    val (pieceId, newRandomState) = spawnNextPiece(config, state.randomState, customRegistry)
-    pieceId.foreach { id =>
-      val registry = customRegistry.getOrElse(
-        PieceRegistry.fromDefinitions(config.enabledPieces.map(pid =>
-          extetris.pieces.StandardPieces.all.getOrElse(pid, extetris.pieces.CustomPieces.all.getOrElse(pid, throw new IllegalArgumentException(s"Unknown piece: $pid")))
-        ).toSeq)
-      )
-      val piece = extetris.pieces.Piece.spawn(registry.get(id).get, config.boardWidth)
+    // Spawn first piece and next piece preview
+    val (firstPiece, nextPiece, finalRandomState) = spawnFirstAndNextPiece(config, state.randomState, customRegistry)
+    firstPiece.foreach { piece =>
       if state.board.canPlace(piece) then
-        state = state.withCurrentPiece(Some(piece)).withRandomState(newRandomState)
+        state = state
+          .withCurrentPiece(Some(piece))
+          .withNextPiece(nextPiece)
+          .withRandomState(finalRandomState)
     }
     state
+  
+  private def spawnFirstAndNextPiece(config: VariantConfig, randomState: extetris.generation.RandomState, customRegistry: Option[extetris.pieces.PieceRegistry] = None): (Option[extetris.pieces.Piece], Option[extetris.pieces.Piece], extetris.generation.RandomState) =
+    val registry = customRegistry.getOrElse(
+      PieceRegistry.fromDefinitions(config.enabledPieces.map(pid =>
+        extetris.pieces.StandardPieces.all.getOrElse(pid, extetris.pieces.CustomPieces.all.getOrElse(pid, throw new IllegalArgumentException(s"Unknown piece: $pid")))
+      ).toSeq)
+    )
+    val generator = extetris.generation.PieceGenerator.forStrategy(config.pieceGeneration.strategy)
+    
+    val (firstPieceId, rs1) = generator.nextPiece(registry, config.pieceGeneration, randomState)
+    val (nextPieceId, rs2) = generator.nextPiece(registry, config.pieceGeneration, rs1)
+    
+    (firstPieceId, nextPieceId, rs2) match
+      case (Some(id1), Some(id2), finalRs) =>
+        val firstPiece = extetris.pieces.Piece.spawn(registry.get(id1).get, config.boardWidth)
+        val nextPiece = extetris.pieces.Piece.spawn(registry.get(id2).get, config.boardWidth)
+        (Some(firstPiece), Some(nextPiece), finalRs)
+      case (Some(id1), None, finalRs) =>
+        val firstPiece = extetris.pieces.Piece.spawn(registry.get(id1).get, config.boardWidth)
+        (Some(firstPiece), None, finalRs)
+      case _ =>
+        (None, None, randomState)
   
   private def spawnNextPiece(config: VariantConfig, randomState: extetris.generation.RandomState, customRegistry: Option[extetris.pieces.PieceRegistry] = None): (Option[extetris.pieces.PieceId], extetris.generation.RandomState) =
     val registry = customRegistry.getOrElse(

@@ -1,4 +1,35 @@
-[debug] Running TaskDef(extetris.api.APITest, org.scalatest.tools.Framework$$anon$1@3a72417a, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.api.APITest, org.scalatest.tools.Framework$$anon$1@46637736, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.engine.EngineTest, org.scalatest.tools.Framework$$anon$1@46637736, false, [SuiteSelector])
+[debug] Running TaskDef(extetris.replay.ReplayTest, org.scalatest.tools.Framework$$anon$1@46637736, false, [SuiteSelector])
+[info] ReplayTest:
+[info] - Replay records initial state
+[info] - Replay records inputs
+[info] - Replay playback reproduces game
+[info] - Step-by-step replay iterator
+[info] - Replay verification
+[info] - Replay with different seed fails verification
+[info] - Deterministic replay from same seed
+[info] EngineTest:
+[info] - New game starts in Playing status with a piece
+[info] - Game starts with piece spawned
+[info] - Left movement
+[info] - Right movement
+[info] - Movement blocked by wall
+[info] - Rotation CW
+[info] - Rotation CCW
+[info] - O piece rotation does nothing
+[info] - Hard drop
+[info] - Piece locks and spawns next
+[info] - Line clear scoring
+[info] - Level progression
+[info] - Game over detection
+[info] - Pause and resume
+[info] - Restart
+[info] - Hold piece
+[info] - Hold disabled by default in classic
+[info] - Configuration change
+[info] - Deterministic execution with same seed
+[info] - Tick moves piece down when gravity enabled
 [info] APITest:
 [info] - Create variant from config
 [info] - Default variants available
@@ -6,17 +37,19 @@
 [info] - Define custom piece
 [info] - New game creation
 [info] - Apply input
-[info] - Tick
+[info] - Tick moves piece down
 [info] - State inspection
 [info] - Serialization roundtrip
 [info] - Replay recording and playback
 [info] - Config builders
 [info] - Piece registry access
 [info] - Custom variant creation without engine modification
-[info] Run completed in 930 milliseconds.
-[info] Total number of tests run: 13
-[info] Suites: completed 1, aborted 0
-[info] Tests: succeeded 13, failed 0, canceled 0, ignored 0, pending 0
+[info] Run completed in 1 second, 23 milliseconds.
+[info] Total number of tests run: 40
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 40, failed 0, canceled 0, ignored 0, pending 0
 [info] All tests passed.
 [debug] Passed tests:
+[debug] 	extetris.engine.EngineTest
 [debug] 	extetris.api.APITest
+[debug] 	extetris.replay.ReplayTest

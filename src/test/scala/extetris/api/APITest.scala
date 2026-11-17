@@ -51,10 +51,13 @@ class APITest extends AnyFunSuite with Matchers:
     val (newState, events) = ExTetrisAPI.applyInput(state, GameInput.MoveRight)
     newState.currentPiece.get.position.x should be > state.currentPiece.get.position.x
   
-  test("Tick"):
-    val state = ExTetrisAPI.newGame(VariantConfig.default, Some(12345L))
+  test("Tick moves piece down"):
+    val config = VariantConfig.default
+      .withLevelConfig(LevelConfig(initialDropInterval = 1))
+    val state = ExTetrisAPI.newGame(config, Some(12345L))
+    val initialY = state.currentPiece.get.position.y
     val (newState, _) = ExTetrisAPI.tick(state)
-    newState.dropCounter shouldBe state.dropCounter + 1
+    newState.currentPiece.get.position.y should be > initialY
   
   test("State inspection"):
     val state = ExTetrisAPI.newGame(VariantConfig.default, Some(12345L))

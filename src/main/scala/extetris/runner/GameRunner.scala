@@ -5,15 +5,16 @@ import extetris.config.VariantConfig
 import extetris.generation.RandomState
 import extetris.engine.GameEngine
 import extetris.api.ExTetrisAPI
-import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.concurrent.duration.*
-import scala.util.{Try, Success, Failure}
+import scala.concurrent.ExecutionContext
+import scalafx.animation.AnimationTimer
+import scalafx.application.Platform
 
 class GameRunner(initialState: GameState)(using ExecutionContext):
   private var currentState: GameState = initialState
   private var listeners: List[GameState => Unit] = List.empty
   private var running = false
-  private var tickTask: Option[Future[Unit]] = None
+  private var animationTimer: Option[AnimationTimer] = None
+  private var lastTickTime: Long = 0
   
   def state: GameState = currentState
   def isRunning: Boolean = running
@@ -25,11 +26,13 @@ class GameRunner(initialState: GameState)(using ExecutionContext):
   def start(): Unit =
     if !running then
       running = true
-      scheduleTick()
+      lastTickTime = System.nanoTime()
+      startAnimationTimer()
   
   def stop(): Unit =
     running = false
-    tickTask = None
+    animationTimer.foreach(_.stop())
+    animationTimer = None
   
   def pause(): Unit =
     if currentState.isPlaying then
@@ -44,7 +47,8 @@ class GameRunner(initialState: GameState)(using ExecutionContext):
   def restart(): Unit =
     val (newState, events) = GameEngine.step(currentState, GameInput.Restart)
     updateState(newState, events)
-    if running then scheduleTick()
+    if running then
+      lastTickTime = System.nanoTime()
   
   def handleInput(input: GameInput): Unit =
     if currentState.isPlaying || input == GameInput.Restart then
@@ -58,21 +62,23 @@ class GameRunner(initialState: GameState)(using ExecutionContext):
   private def updateState(newState: GameState, events: List[GameEvent]): Unit =
     currentState = newState
     notifyListeners()
-    if newState.isPlaying && running then scheduleTick()
   
   private def notifyListeners(): Unit =
     listeners.foreach(_(currentState))
   
-  private def scheduleTick(): Unit =
+  private def startAnimationTimer(): Unit =
+    animationTimer = Some(AnimationTimer(t => gameLoop(t)))
+    animationTimer.foreach(_.start())
+  
+  private def gameLoop(now: Long): Unit =
     if running && currentState.isPlaying then
-      val delay = currentState.dropInterval.millis
-      tickTask = Some(
-        Future {
-          Thread.sleep(delay.toMillis)
+      val elapsedMs = (now - lastTickTime) / 1_000_000
+      if elapsedMs >= currentState.dropInterval then
+        lastTickTime = now
+        Platform.runLater { () =>
           if running && currentState.isPlaying then
             handleInput(GameInput.Tick)
         }
-      )
   
   def save(path: String): Either[Exception, Unit] =
     extetris.persistence.GamePersistence.save(currentState, path)
@@ -81,7 +87,8 @@ class GameRunner(initialState: GameState)(using ExecutionContext):
     extetris.persistence.GamePersistence.load(path).map { loadedState =>
       currentState = loadedState
       notifyListeners()
-      if running && currentState.isPlaying then scheduleTick()
+      if running && currentState.isPlaying then
+        lastTickTime = System.nanoTime()
     }
 
 object GameRunner:

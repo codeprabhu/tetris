@@ -149,19 +149,16 @@ object GameEngine:
     if !state.isPlaying then return (state, List.empty)
     
     if !state.config.gravityEnabled then
-      return (state.incrementDropCounter, List.empty)
+      return (state, List.empty)
     
-    val newCounter = state.dropCounter + 1
-    if newCounter >= state.dropInterval then
-      val (newState, events) = move(state.resetDropCounter, 0, 1)
-      if newState.currentPiece.isEmpty || newState.currentPiece.get.position.y == state.currentPiece.get.position.y then
-        // Piece couldn't move down, lock it
-        val (lockedState, lockEvents) = lockPiece(newState)
-        (lockedState, events ++ lockEvents)
-      else
-        (newState.incrementDropCounter, events)
+    // Move piece down by one cell
+    val (newState, events) = move(state, 0, 1)
+    if newState.currentPiece.isEmpty || newState.currentPiece.get.position.y == state.currentPiece.get.position.y then
+      // Piece couldn't move down, lock it
+      val (lockedState, lockEvents) = lockPiece(newState)
+      (lockedState, events ++ lockEvents)
     else
-      (state.incrementDropCounter, List.empty)
+      (newState, events)
   
   private def lockPiece(state: GameState): (GameState, List[GameEvent]) =
     state.currentPiece match
@@ -191,27 +188,50 @@ object GameEngine:
             newState = newState.setLevel(newLevel).setDropInterval(state.config.levelConfig.dropIntervalForLevel(newLevel))
             events = events :+ GameEvent.LevelChanged(state.level, newLevel)
         
-        // Spawn next piece
-        val (nextPieceId, newRandomState) = spawnNextPiece(state.config, state.randomState)
-        nextPieceId match
-          case Some(pid) =>
-            val registry = PieceRegistry.fromDefinitions(state.config.enabledPieces.map(pid => 
-              StandardPieces.all.getOrElse(pid, CustomPieces.all.getOrElse(pid, throw new IllegalArgumentException(s"Unknown piece: $pid")))
-            ).toSeq)
-            val nextPiece = Piece.spawn(registry.get(pid).get, state.config.boardWidth)
-            if clearedBoard.canPlace(nextPiece) then
+        // Spawn next piece (use the queued next piece if available, otherwise generate new)
+        val nextPiece = state.nextPiece match
+          case Some(queuedPiece) =>
+            // Generate another piece for the preview queue
+            val (nextPieceId, newRandomState) = spawnNextPiece(state.config, state.randomState)
+            nextPieceId match
+              case Some(pid) =>
+                val registry = PieceRegistry.fromDefinitions(state.config.enabledPieces.map(pid => 
+                  StandardPieces.all.getOrElse(pid, CustomPieces.all.getOrElse(pid, throw new IllegalArgumentException(s"Unknown piece: $pid")))
+                ).toSeq)
+                val previewPiece = Piece.spawn(registry.get(pid).get, state.config.boardWidth)
+                (queuedPiece, previewPiece, newRandomState)
+              case None =>
+                (queuedPiece, null, state.randomState)
+          case None =>
+            // First piece after lock - generate two pieces
+            val (pieceId1, rs1) = spawnNextPiece(state.config, state.randomState)
+            val (pieceId2, rs2) = spawnNextPiece(state.config, rs1)
+            (pieceId1, pieceId2, rs2) match
+              case (Some(pid1), Some(pid2), newRs) =>
+                val registry = PieceRegistry.fromDefinitions(state.config.enabledPieces.map(pid => 
+                  StandardPieces.all.getOrElse(pid, CustomPieces.all.getOrElse(pid, throw new IllegalArgumentException(s"Unknown piece: $pid")))
+                ).toSeq)
+                val currentPiece = Piece.spawn(registry.get(pid1).get, state.config.boardWidth)
+                val previewPiece = Piece.spawn(registry.get(pid2).get, state.config.boardWidth)
+                (currentPiece, previewPiece, newRs)
+              case _ =>
+                (null, null, state.randomState)
+        
+        nextPiece match
+          case (currentPiece: Piece, previewPiece: Piece, newRandomState: RandomState) =>
+            if clearedBoard.canPlace(currentPiece) then
               newState = newState
-                .withCurrentPiece(Some(nextPiece))
-                .withNextPiece(None) // Will be set by preview
+                .withCurrentPiece(Some(currentPiece))
+                .withNextPiece(Some(previewPiece))
                 .withRandomState(newRandomState)
-              events = events :+ GameEvent.PieceSpawned(nextPiece)
+              events = events :+ GameEvent.PieceSpawned(currentPiece)
             else
               // Game over
               newState = newState
                 .withStatus(GameStatus.GameOver)
                 .withRandomState(newRandomState)
               events = events :+ GameEvent.GameOver(newState.score, newState.level, newState.linesCleared)
-          case None =>
+          case (null, _, _) | (_, null, _) | (_, _, null) =>
             newState = newState.withStatus(GameStatus.GameOver)
             events = events :+ GameEvent.GameOver(newState.score, newState.level, newState.linesCleared)
         

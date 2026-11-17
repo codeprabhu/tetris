@@ -204,20 +204,16 @@ class EngineTest extends AnyFunSuite with Matchers:
     final1.level shouldBe final2.level
     final1.linesCleared shouldBe final2.linesCleared
   
-  test("Tick advances drop counter"):
-    val state = createTestState()
-    val (newState, _) = GameEngine.step(state, GameInput.Tick)
-    newState.dropCounter shouldBe state.dropCounter + 1
-  
-  test("Gravity moves piece down"):
+  test("Tick moves piece down when gravity enabled"):
     val config = VariantConfig.default
       .withLevelConfig(LevelConfig(initialDropInterval = 1))
     val state = ExTetrisAPI.newGame(config, Some(12345L))
+    val initialY = state.currentPiece.get.position.y
     
-    // Just verify ticks execute and dropCounter increments
+    // Need enough ticks to trigger drop
     var currentState = state
     for _ <- 1 to 5 do
       val (ns, _) = GameEngine.step(currentState, GameInput.Tick)
       currentState = ns
     
-    currentState.dropCounter should be > state.dropCounter
+    currentState.currentPiece.get.position.y should be > initialY
