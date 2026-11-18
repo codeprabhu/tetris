@@ -1,5 +1,13 @@
-[error] -- [E121] Pattern Match Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/engine/GameEngine.scala:234:15 
-[error] 234 |          case _ =>
-[error]     |               ^
-[error]     |Unreachable case except for null (if this is intentional, consider writing case null => instead).
-[error] one error found
+[error] -- [E006] Not Found Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/gui/MainMenuScene.scala:132:8 
+[error] 132 |        Platform.runLater { () =>
+[error]     |        ^^^^^^^^
+[error]     |        Not found: Platform
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/gui/SettingsScene.scala:79:8 
+[error] 79 |        Platform.runLater { () =>
+[error]    |        ^^^^^^^^
+[error]    |        Not found: Platform
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] two errors found

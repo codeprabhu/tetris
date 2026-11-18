@@ -7,6 +7,7 @@ import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
 import scalafx.Includes._
+import scalafx.application.Platform
 import scala.reflect.Selectable.reflectiveSelectable
 import extetris.config.{VariantConfig, ScoringConfig, LevelConfig, PieceGenerationConfig}
 import extetris.pieces.PieceId
@@ -16,6 +17,7 @@ class SettingsScene(previousScene: { def scene: Scene }):
   val scene: Scene = new Scene:
     root = new StackPane:
       style = "-fx-background-color: #0d0d15;"
+      pickOnBounds = false
       children = Seq(
         new ScrollPane():
           fitToWidth = true
@@ -71,7 +73,15 @@ class SettingsScene(previousScene: { def scene: Scene }):
               textFill = Color.Gray
           )
       )
-  
+    
+    // Request focus when scene is shown on stage
+    scene.window.onChange { (_, _, newWindow) =>
+      if newWindow != null then
+        Platform.runLater { () =>
+          scene.root.value.requestFocus()
+        }
+    }
+   
   private def createBoardSection(): VBox =
     new VBox(12):
       style = "-fx-background-color: #1a1a2e; -fx-background-radius: 8; -fx-border-color: #333; -fx-border-width: 1; -fx-padding: 20;"

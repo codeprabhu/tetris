@@ -78,8 +78,11 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
   private val pauseOverlay = new StackPane():
     visible = false
     pickOnBounds = false
+    mouseTransparent = true
     children = new VBox(16):
       alignment = Pos.Center
+      pickOnBounds = false
+      mouseTransparent = true
       style = "-fx-background-color: rgba(13, 13, 21, 0.95); -fx-background-radius: 8;"
       children = Seq(
         new Label("PAUSED"):
@@ -91,13 +94,15 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
           font = scalafx.scene.text.Font("Monospace", 16)
           textFill = Color.Gray
       )
-    style = "-fx-background-color: rgba(0, 0, 0, 0.7);"
   
   private val gameOverOverlay = new StackPane():
     visible = false
     pickOnBounds = false
+    mouseTransparent = true
     children = new VBox(20):
       alignment = Pos.Center
+      pickOnBounds = false
+      mouseTransparent = true
       style = "-fx-background-color: rgba(13, 13, 21, 0.95); -fx-background-radius: 8; -fx-padding: 40;"
       children = Seq(
         new Label("GAME OVER"):
@@ -123,7 +128,6 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
           style = "-fx-background-color: #333; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-background-radius: 4;"
           onAction = _ => returnToMenu()
       )
-    style = "-fx-background-color: rgba(0, 0, 0, 0.8);"
   
   private var hasFocus = false
   
@@ -319,9 +323,12 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
           case KeyCode.Down => () // Soft drop release handled by tick
           case _ =>
   
-    // Request focus when scene is shown
-    Platform.runLater {
-      scene.root.value.requestFocus()
+    // Request focus when scene is shown on stage
+    scene.window.onChange { (_, _, newWindow) =>
+      if newWindow != null then
+        Platform.runLater { () =>
+          scene.root.value.requestFocus()
+        }
     }
   
   private def updateView(): Unit =
@@ -457,16 +464,22 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
     linesLabel.text = s"Lines: ${state.linesCleared}"
   
   private def updateOverlays(state: GameState): Unit =
-    pauseOverlay.visible = state.isPaused
-    gameOverOverlay.visible = state.isGameOver
-    if state.isGameOver then
+    val paused = state.isPaused
+    val gameOver = state.isGameOver
+    pauseOverlay.visible = paused
+    pauseOverlay.mouseTransparent = !paused
+    gameOverOverlay.visible = gameOver
+    gameOverOverlay.mouseTransparent = !gameOver
+    if gameOver then
       val label = gameOverOverlay.children.head.asInstanceOf[scalafx.scene.layout.VBox].children(1).asInstanceOf[Label]
       label.text = f"Final Score: ${state.score}%,d\nLevel: ${state.level}\nLines: ${state.linesCleared}"
   
   def restart(): Unit =
     runner.restart()
     pauseOverlay.visible = false
+    pauseOverlay.mouseTransparent = true
     gameOverOverlay.visible = false
+    gameOverOverlay.mouseTransparent = true
   
   def returnToMenu(): Unit =
     runner.stop()
