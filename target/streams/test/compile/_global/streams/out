@@ -1,8 +1,0 @@
-[error] -- [E008] Not Found Error: /home/shrivathssp/Desktop/tetris/src/test/scala/extetris/generation/GenerationTest.scala:34:8 
-[error] 31 |      piece.foreach { p =>
-[error] 32 |        val newMap = map.updated(p, map.getOrElse(p, 0) + 1)
-[error] 33 |        (newMap, newState)
-[error] 34 |      }.getOrElse((map, newState))
-[error]    |      ^
-[error]    |      value getOrElse is not a member of Unit
-[error] one error found

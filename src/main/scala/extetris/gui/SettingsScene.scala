@@ -74,12 +74,9 @@ class SettingsScene(previousScene: { def scene: Scene }):
           )
       )
     
-    // Request focus when scene is shown on stage
-    scene.window.onChange { (_, _, newWindow) =>
-      if newWindow != null then
-        Platform.runLater { () =>
-          scene.root.value.requestFocus()
-        }
+    // Request focus after scene is set on stage
+    Platform.runLater { () =>
+      scene.root.value.requestFocus()
     }
    
   private def createBoardSection(): VBox =

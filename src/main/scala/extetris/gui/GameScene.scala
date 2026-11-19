@@ -323,12 +323,9 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
           case KeyCode.Down => () // Soft drop release handled by tick
           case _ =>
   
-    // Request focus when scene is shown on stage
-    scene.window.onChange { (_, _, newWindow) =>
-      if newWindow != null then
-        Platform.runLater { () =>
-          scene.root.value.requestFocus()
-        }
+    // Request focus after scene is set on stage
+    Platform.runLater { () =>
+      scene.root.value.requestFocus()
     }
   
   private def updateView(): Unit =
