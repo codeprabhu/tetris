@@ -33,13 +33,13 @@ class MainMenuScene:
   val scene: Scene = new Scene:
     root = new StackPane:
       style = "-fx-background-color: #0d0d15;"
-      pickOnBounds = false
+      pickOnBounds = true
       children = Seq(
         new VBox(32):
           alignment = Pos.Center
           padding = Insets(60)
           maxWidth = 480
-          pickOnBounds = false
+          pickOnBounds = true
           style = "-fx-background-color: transparent;"
           children = Seq(
             new Label("ExTetris Platform"):
@@ -120,6 +120,9 @@ class MainMenuScene:
         new VBox:
           alignment = Pos.BottomCenter
           padding = Insets(30)
+          // Decorative footer: must never intercept mouse events from the buttons below it.
+          mouseTransparent = true
+          pickOnBounds = false
           children = Seq(
             new Label("ExTetris Platform • Principles of Programming Languages"):
               font = Font("Monospace", 11)

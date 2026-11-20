@@ -67,6 +67,9 @@ class SettingsScene(previousScene: { def scene: Scene }):
         new VBox:
           alignment = Pos.BottomCenter
           padding = Insets(20)
+          // Decorative footer: must never intercept mouse events from the settings controls.
+          mouseTransparent = true
+          pickOnBounds = false
           children = Seq(
             new Label("ExTetris Platform • Settings"):
               font = Font("Monospace", 10)

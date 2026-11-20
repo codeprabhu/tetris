@@ -101,8 +101,7 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
     mouseTransparent = true
     children = new VBox(20):
       alignment = Pos.Center
-      pickOnBounds = false
-      mouseTransparent = true
+      pickOnBounds = true
       style = "-fx-background-color: rgba(13, 13, 21, 0.95); -fx-background-radius: 8; -fx-padding: 40;"
       children = Seq(
         new Label("GAME OVER"):
@@ -480,6 +479,7 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
   
   def returnToMenu(): Unit =
     runner.stop()
+    renderTimer.stop()
     MainApp.stage.scene = mainMenu.scene
   
   def saveGame(): Unit =
@@ -516,5 +516,11 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
   private val renderTimer = AnimationTimer(t => updateView())
   renderTimer.start()
   
-  // Cleanup on scene change
-  scene.window.value.onCloseRequest = _ => renderTimer.stop()
+  // Cleanup on window close. The scene may not be attached to a window yet,
+  // so register as soon as a window becomes available instead of dereferencing null.
+  scene.window.onChange { (_, _, window) =>
+    if window != null then
+      window.onCloseRequest = _ =>
+        renderTimer.stop()
+        runner.stop()
+  }
