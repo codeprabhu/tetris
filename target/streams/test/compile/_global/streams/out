@@ -1,0 +1,13 @@
+[error] -- Error: /home/shrivathssp/Desktop/tetris/src/test/scala/extetris/gui/ClickProbe.scala:40:33 
+[error] 40 |    robot.mouseClick(MouseButton.PRIMARY)
+[error]    |                     ^^^^^^^^^^^^^^^^^^^
+[error]    |value PRIMARY in object MouseButton is deprecated since 8.0.60-R10: Use Primary; PRIMARY will be removed in a future release
+[error] -- Error: /home/shrivathssp/Desktop/tetris/src/test/scala/extetris/gui/ClickProbe.scala:59:33 
+[error] 59 |          robot.keyPress(KeyCode.ESCAPE)
+[error]    |                         ^^^^^^^^^^^^^^
+[error]    |value ESCAPE in object KeyCode is deprecated since 8.0.60-R10: Use Escape; ESCAPE will be removed in a future release
+[error] -- Error: /home/shrivathssp/Desktop/tetris/src/test/scala/extetris/gui/ClickProbe.scala:60:35 
+[error] 60 |          robot.keyRelease(KeyCode.ESCAPE)
+[error]    |                           ^^^^^^^^^^^^^^
+[error]    |value ESCAPE in object KeyCode is deprecated since 8.0.60-R10: Use Escape; ESCAPE will be removed in a future release
+[error] three errors found

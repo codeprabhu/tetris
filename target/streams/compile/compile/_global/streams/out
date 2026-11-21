@@ -1,0 +1,40 @@
+[error] -- [E040] Syntax Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/gui/MainMenuScene.scala:49:12 
+[error] 49 |            new Label("ExTetris Platform"):
+[error]    |            ^^^
+[error]    |            ')' expected, but 'new' found
+[error] -- Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/gui/MainMenuScene.scala:123:8 
+[error] 123 |        ,
+[error]     |        ^
+[error]     |        end of statement expected but ',' found
+[error] -- [E049] Reference Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/gui/MainMenuScene.scala:46:4 
+[error] 46 |    scene.onMouseClicked = e => {
+[error]    |    ^^^^^
+[error]    |Reference to scene is ambiguous.
+[error]    |It is both defined in class MainMenuScene
+[error]    |and inherited subsequently in anonymous class scalafx.scene.layout.VBox {...}
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E081] Type Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/gui/MainMenuScene.scala:46:27 
+[error] 46 |    scene.onMouseClicked = e => {
+[error]    |                           ^
+[error]    |Could not infer type for parameter e of anonymous function
+[error]    |
+[error]    |Expected type for the whole anonymous function: scalafx.beans.binding.ObjectBinding[
+[error]    |  javafx.beans².binding².ObjectBinding²[? >: javafx.scene.input.MouseEvent]]
+[error]    |
+[error]    |where:    ObjectBinding  is a class in package scalafx.beans.binding
+[error]    |          ObjectBinding² is a class in package javafx.beans².binding²
+[error]    |          beans          is a package in package scalafx
+[error]    |          beans²         is a package in package javafx
+[error]    |          binding        is a package in package scalafx.beans
+[error]    |          binding²       is a package in package javafx.beans²
+[error] -- [E134] Type Error: /home/shrivathssp/Desktop/tetris/src/main/scala/extetris/gui/MainMenuScene.scala:44:10 
+[error] 44 |          children = Seq(
+[error]    |          ^^^^^^^^
+[error]    |None of the overloaded alternatives of method children_= in class Pane with types
+[error]    | (n: scalafx.scene.Node): Unit
+[error]    | (c: Iterable[scalafx.scene.Node]): Unit
+[error]    |match arguments (Seq[A])
+[error]    |
+[error]    |where:    A is a type variable with constraint >: Unit
+[error] 5 errors found
