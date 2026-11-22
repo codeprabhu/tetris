@@ -1,31 +1,31 @@
 [debug] [zinc] IncrementalCompile -----------
 [debug] IncrementalCompile.incrementalCompile
-[debug] previous = Stamps for: 32 products, 16 sources, 13 libraries
+[debug] previous = Stamps for: 31 products, 16 sources, 13 libraries
 [debug] current source = Set(${BASE}/src/test/scala/extetris/api/APITest.scala, ${BASE}/src/test/scala/extetris/persistence/PersistenceTest.scala, ${BASE}/src/test/scala/extetris/pieces/PieceRegistryTest.scala, ${BASE}/src/test/scala/extetris/pieces/PieceRotationTest.scala, ${BASE}/src/test/scala/extetris/pieces/PieceTest.scala, ${BASE}/src/test/scala/extetris/config/ConfigTest.scala, ${BASE}/src/test/scala/extetris/generation/RandomStateTest.scala, ${BASE}/src/test/scala/extetris/engine/EngineTest.scala, ${BASE}/src/test/scala/extetris/examples/ExampleVariantsTest.scala, ${BASE}/src/test/scala/extetris/generation/GenerationTest.scala, ${BASE}/src/test/scala/extetris/replay/ReplayTest.scala, ${BASE}/src/test/scala/extetris/model/CellTest.scala, ${BASE}/src/test/scala/extetris/pieces/PieceDefinitionTest.scala, ${BASE}/src/test/scala/extetris/board/BoardTest.scala, ${BASE}/src/test/scala/extetris/model/PositionTest.scala)
-[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(${BASE}/src/test/scala/extetris/gui/ClickProbe.scala), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(${BASE}/src/test/scala/extetris/gui/GameOverProbe.scala), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
 [debug] 
 [debug] Initial source changes:
-[debug] 	removed: Set(${BASE}/src/test/scala/extetris/gui/ClickProbe.scala)
+[debug] 	removed: Set(${BASE}/src/test/scala/extetris/gui/GameOverProbe.scala)
 [debug] 	added: Set()
 [debug] 	modified: Set()
 [debug] Invalidated products: Set()
 [debug] External API changes: API Changes: Set()
 [debug] Modified binary dependencies: Set()
-[debug] Initial directly invalidated classes: Set(extetris.gui.ClickProbe)
+[debug] Initial directly invalidated classes: Set(extetris.gui.GameOverProbe)
 [debug] Sources indirectly invalidated by:
 [debug] 	product: Set()
 [debug] 	binary dep: Set()
 [debug] 	external source: Set()
-[debug] All initially invalidated classes: Set(extetris.gui.ClickProbe)
+[debug] All initially invalidated classes: Set(extetris.gui.GameOverProbe)
 [debug] All initially invalidated sources:Set()
-[debug] Initial set of included nodes: extetris.gui.ClickProbe
+[debug] Initial set of included nodes: extetris.gui.GameOverProbe
 [debug] compilation cycle 1
-[debug] Invalidating (transitively) by inheritance from extetris.gui.ClickProbe...
-[debug] Initial set of included nodes: extetris.gui.ClickProbe
-[debug] Invalidated by transitive inheritance dependency: Set(extetris.gui.ClickProbe)
-[debug] Change NamesChange(extetris.gui.ClickProbe,ModifiedNames(changes = UsedName(ne,[Default]), UsedName(asInstanceOf,[Default]), UsedName(hashCode,[Default]), UsedName(synchronized,[Default]), UsedName(ClickProbe,[Default]), UsedName(start,[Default]), UsedName(ClickProbe;init;$,[Default]), UsedName(finalize,[Default]), UsedName(!=,[Default]), UsedName(toString,[Default]), UsedName(equals,[Default]), UsedName(##,[Default]), UsedName(init,[Default]), UsedName(eq,[Default]), UsedName(wait,[Default]), UsedName(clone,[Default]), UsedName($isInstanceOf,[Default]), UsedName(notifyAll,[Default]), UsedName(hostServices,[Default]), UsedName(stopApp,[Default]), UsedName(getClass,[Default]), UsedName($asInstanceOf,[Default]), UsedName(stage_=,[Default]), UsedName(Object;init;,[Default]), UsedName(stage,[Default]), UsedName(main,[Default]), UsedName(parameters,[Default]), UsedName(==,[Default]), UsedName(isInstanceOf,[Default]), UsedName(notify,[Default]), UsedName(JFXApp3;init;,[Default]))) invalidates 1 classes due to The extetris.gui.ClickProbe has the following regular definitions changed:
-[debug] 	UsedName(ne,[Default]), UsedName(asInstanceOf,[Default]), UsedName(hashCode,[Default]), UsedName(synchronized,[Default]), UsedName(ClickProbe,[Default]), UsedName(start,[Default]), UsedName(ClickProbe;init;$,[Default]), UsedName(finalize,[Default]), UsedName(!=,[Default]), UsedName(toString,[Default]), UsedName(equals,[Default]), UsedName(##,[Default]), UsedName(init,[Default]), UsedName(eq,[Default]), UsedName(wait,[Default]), UsedName(clone,[Default]), UsedName($isInstanceOf,[Default]), UsedName(notifyAll,[Default]), UsedName(hostServices,[Default]), UsedName(stopApp,[Default]), UsedName(getClass,[Default]), UsedName($asInstanceOf,[Default]), UsedName(stage_=,[Default]), UsedName(Object;init;,[Default]), UsedName(stage,[Default]), UsedName(main,[Default]), UsedName(parameters,[Default]), UsedName(==,[Default]), UsedName(isInstanceOf,[Default]), UsedName(notify,[Default]), UsedName(JFXApp3;init;,[Default]).
-[debug]   > by transitive inheritance: Set(extetris.gui.ClickProbe)
+[debug] Invalidating (transitively) by inheritance from extetris.gui.GameOverProbe...
+[debug] Initial set of included nodes: extetris.gui.GameOverProbe
+[debug] Invalidated by transitive inheritance dependency: Set(extetris.gui.GameOverProbe)
+[debug] Change NamesChange(extetris.gui.GameOverProbe,ModifiedNames(changes = UsedName(JFXApp3;init;,[Default]), UsedName(given_ExecutionContextExecutor,[Implicit]), UsedName(hostServices,[Default]), UsedName(eq,[Default]), UsedName(parameters,[Default]), UsedName(ne,[Default]), UsedName(stage,[Default]), UsedName(getClass,[Default]), UsedName(==,[Default]), UsedName(synchronized,[Default]), UsedName(wait,[Default]), UsedName(stage_=,[Default]), UsedName(isInstanceOf,[Default]), UsedName(GameOverProbe;init;$,[Default]), UsedName($asInstanceOf,[Default]), UsedName(equals,[Default]), UsedName(start,[Default]), UsedName(notify,[Default]), UsedName(asInstanceOf,[Default]), UsedName(##,[Default]), UsedName(init,[Default]), UsedName(hashCode,[Default]), UsedName(notifyAll,[Default]), UsedName(toString,[Default]), UsedName(stopApp,[Default]), UsedName($isInstanceOf,[Default]), UsedName(finalize,[Default]), UsedName(main,[Default]), UsedName(clone,[Default]), UsedName(GameOverProbe,[Default]), UsedName(Object;init;,[Default]), UsedName(!=,[Default]))) invalidates 1 classes due to The extetris.gui.GameOverProbe has the following implicit definitions changed:
+[debug] 	UsedName(given_ExecutionContextExecutor,[Implicit]).
+[debug]   > by transitive inheritance: Set(extetris.gui.GameOverProbe)
 [debug]   > 
 [debug]   > 
 [debug]         
