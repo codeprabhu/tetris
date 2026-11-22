@@ -95,40 +95,8 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
           textFill = Color.Gray
       )
   
-  private val gameOverOverlay = new StackPane():
-    visible = false
-    pickOnBounds = false
-    mouseTransparent = true
-    children = new VBox(20):
-      alignment = Pos.Center
-      pickOnBounds = true
-      style = "-fx-background-color: rgba(13, 13, 21, 0.95); -fx-background-radius: 8; -fx-padding: 40;"
-      children = Seq(
-        new Label("GAME OVER"):
-          font = scalafx.scene.text.Font("Monospace", 48)
-          textFill = Color.Red
-          style = "-fx-effect: dropshadow(gaussian, #ff0000, 20, 0.5, 0, 0);"
-        ,
-        new Label(""):
-          font = scalafx.scene.text.Font("Monospace", 20)
-          textFill = Color.White
-        ,
-        new Button("Restart"):
-          prefWidth = 180
-          prefHeight = 44
-          font = scalafx.scene.text.Font("Monospace", 16)
-          style = "-fx-background-color: #00ffff; -fx-text-fill: #0d0d15; -fx-font-weight: bold; -fx-background-radius: 4;"
-          onAction = _ => restart()
-        ,
-        new Button("Main Menu"):
-          prefWidth = 180
-          prefHeight = 44
-          font = scalafx.scene.text.Font("Monospace", 16)
-          style = "-fx-background-color: #333; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-background-radius: 4;"
-          onAction = _ => returnToMenu()
-      )
-  
   private var hasFocus = false
+  private var gameOverShown = false
   
   val scene: Scene = new Scene:
     root = new BorderPane():
@@ -252,7 +220,7 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
           ,
           new StackPane():
             style = "-fx-background-color: transparent;"
-            children = Seq(boardPane, pauseOverlay, gameOverOverlay)
+            children = Seq(boardPane, pauseOverlay)
           ,
           new VBox(16):
             alignment = Pos.TopCenter
@@ -461,21 +429,22 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
   
   private def updateOverlays(state: GameState): Unit =
     val paused = state.isPaused
-    val gameOver = state.isGameOver
     pauseOverlay.visible = paused
     pauseOverlay.mouseTransparent = !paused
-    gameOverOverlay.visible = gameOver
-    gameOverOverlay.mouseTransparent = !gameOver
-    if gameOver then
-      val label = gameOverOverlay.children.head.asInstanceOf[scalafx.scene.layout.VBox].children(1).asInstanceOf[Label]
-      label.text = f"Final Score: ${state.score}%,d\nLevel: ${state.level}\nLines: ${state.linesCleared}"
+    if state.isGameOver && !gameOverShown then
+      gameOverShown = true
+      showGameOver(state)
+  
+  private def showGameOver(state: GameState): Unit =
+    // Stop both loops before leaving the gameplay scene.
+    renderTimer.stop()
+    runner.stop()
+    MainApp.stage.scene = GameOverScene(state, mainMenu).scene
   
   def restart(): Unit =
     runner.restart()
     pauseOverlay.visible = false
     pauseOverlay.mouseTransparent = true
-    gameOverOverlay.visible = false
-    gameOverOverlay.mouseTransparent = true
   
   def returnToMenu(): Unit =
     runner.stop()
