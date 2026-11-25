@@ -9,9 +9,9 @@ import extetris.generation.{PieceGenerator, RandomState}
 object GameEngine:
   def step(state: GameState, input: GameInput): (GameState, List[GameEvent]) =
     input match
-      case GameInput.MoveLeft => move(state, -1, 0)
-      case GameInput.MoveRight => move(state, 1, 0)
-      case GameInput.MoveDown => move(state, 0, 1)
+      case GameInput.MoveLeft => move(state, -1, 0, GameInput.MoveLeft)
+      case GameInput.MoveRight => move(state, 1, 0, GameInput.MoveRight)
+      case GameInput.MoveDown => softDrop(state)
       case GameInput.HardDrop => hardDrop(state)
       case GameInput.RotateCW => rotate(state, clockwise = true)
       case GameInput.RotateCCW => rotate(state, clockwise = false)
@@ -22,7 +22,7 @@ object GameEngine:
       case GameInput.Tick => tick(state)
       case GameInput.ChangeConfig(newConfig) => changeConfig(state, newConfig)
   
-  private def move(state: GameState, dx: Int, dy: Int): (GameState, List[GameEvent]) =
+  private def move(state: GameState, dx: Int, dy: Int, action: GameInput): (GameState, List[GameEvent]) =
     if !state.isPlaying then return (state, List.empty)
     
     state.currentPiece match
@@ -31,12 +31,23 @@ object GameEngine:
         if state.board.canPlace(moved) then
           val newState = state
             .withCurrentPiece(Some(moved))
-            .withLastAction(GameInput.MoveDown)
+            .withLastAction(action)
           val event = GameEvent.PieceMoved(moved, piece.position, moved.position)
           (newState, List(event))
         else
           (state, List.empty)
       case None => (state, List.empty)
+  
+  /** Manual soft drop: one cell down plus the configured drop bonus. */
+  private def softDrop(state: GameState): (GameState, List[GameEvent]) =
+    val (movedState, moveEvents) = move(state, 0, 1, GameInput.MoveDown)
+    if moveEvents.nonEmpty then
+      val points = state.config.scoring.softDropScore(1)
+      if points > 0 then
+        val scoredState = movedState.addScore(points)
+        (scoredState, moveEvents :+ GameEvent.ScoreChanged(state.score, scoredState.score))
+      else (movedState, moveEvents)
+    else (movedState, moveEvents)
   
   private def rotate(state: GameState, clockwise: Boolean): (GameState, List[GameEvent]) =
     if !state.isPlaying then return (state, List.empty)
@@ -89,9 +100,11 @@ object GameEngine:
         
         if dropDistance > 0 then
           val (lockedState, lockEvents) = lockPiece(state.withCurrentPiece(Some(current)))
+          val dropPoints = state.config.scoring.hardDropScore(dropDistance)
+          val scoredState = if dropPoints > 0 then lockedState.addScore(dropPoints) else lockedState
           val dropEvent = GameEvent.PieceHardDropped(current, piece.position, current.position)
-          val scoreEvent = GameEvent.ScoreChanged(state.score, lockedState.score)
-          (lockedState, dropEvent :: scoreEvent :: lockEvents)
+          val scoreEvent = GameEvent.ScoreChanged(state.score, scoredState.score)
+          (scoredState, dropEvent :: scoreEvent :: lockEvents)
         else
           (state, List.empty)
       case None => (state, List.empty)
@@ -152,7 +165,7 @@ object GameEngine:
       return (state, List.empty)
     
     // Move piece down by one cell
-    val (newState, events) = move(state, 0, 1)
+    val (newState, events) = move(state, 0, 1, GameInput.Tick)
     if newState.currentPiece.isEmpty || newState.currentPiece.get.position.y == state.currentPiece.get.position.y then
       // Piece couldn't move down, lock it
       val (lockedState, lockEvents) = lockPiece(newState)

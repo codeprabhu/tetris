@@ -1,15 +1,14 @@
 package extetris.gui
 
 import scalafx.scene.Scene
-import scalafx.scene.layout.{VBox, HBox, GridPane, StackPane, Region}
-import scalafx.scene.control.{Button, Label, CheckBox, ComboBox, Separator, Spinner, TextField, ToggleButton, ScrollPane}
+import scalafx.scene.layout.{VBox, HBox, GridPane, StackPane}
+import scalafx.scene.control.{Button, Label, CheckBox, ComboBox, Separator, Spinner, TextField, ScrollPane}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
 import scalafx.Includes._
 import scalafx.application.Platform
 import scala.reflect.Selectable.reflectiveSelectable
-import extetris.config.{VariantConfig, ScoringConfig, LevelConfig, PieceGenerationConfig}
 import extetris.pieces.PieceId
 
 class SettingsScene(previousScene: { def scene: Scene }):

@@ -10,7 +10,6 @@ This document lists features that are not implemented, deliberate simplification
 - **Combo System**: No combo counter or bonus for consecutive line clears.
 - **All Clear / Perfect Clear**: No detection or bonus for clearing the entire board.
 - **Hold Piece Preview**: Hold shows piece type but not its rotation state.
-- **Ghost Piece**: No ghost piece (preview of where piece will land).
 - **Multiplayer**: No multiplayer support (VS, co-op, or online).
 
 ### Piece System
@@ -37,7 +36,7 @@ This document lists features that are not implemented, deliberate simplification
 - **Key Binding Customization**: Controls hardcoded; no rebind support.
 - **Themes/Skins**: No theme system for board/piece colors.
 - **High Score Table**: No persistent high score storage.
-- **Pause Menu**: Basic pause overlay only; no resume/restart/quit menu.
+- **Pause Menu**: Pause shows an overlay and resumes with P (or Esc to the menu); there is no button-driven pause menu.
 - **Touch/Mobile Support**: Desktop-only; no touch controls.
 - **Accessibility**: No screen reader support, colorblind modes, or high contrast option.
 
@@ -83,14 +82,13 @@ This document lists features that are not implemented, deliberate simplification
 
 1. **SRS Implementation**: Full wall kick tables per piece
 2. **Bag Randomizer**: Proper 7-bag / 14-bag with configurable size
-3. **Ghost Piece**: Render lock position preview
-4. **Replay Compression**: Delta encoding + gzip
-5. **High Score System**: Local + optional online leaderboard
-6. **Theme Engine**: JSON-based skinning
-7. **Key Rebinding**: Configurable controls
-8. **Property Tests**: ScalaCheck for engine invariants
-9. **Benchmarks**: JMH suite for engine performance
-10. **Web Demo**: Scala.js compile to browser
+3. **Replay Compression**: Delta encoding + gzip
+4. **High Score System**: Local + optional online leaderboard
+5. **Theme Engine**: JSON-based skinning
+6. **Key Rebinding**: Configurable controls
+7. **Property Tests**: ScalaCheck for engine invariants
+8. **Benchmarks**: JMH suite for engine performance
+9. **Web Demo**: Scala.js compile to browser
 
 ## Assignment Scope Notes
 
@@ -111,7 +109,7 @@ The following were **required** and **implemented**:
 - ✅ Documentation (README, Arch, API, Manual, Config, UML)
 
 The following were **not required** and **not implemented**:
-- SRS, T-spins, combos, ghost piece
+- SRS, T-spins, combos
 - Multiplayer, AI, plugins
 - High scores, themes, key rebinding
 - Property-based testing, benchmarks

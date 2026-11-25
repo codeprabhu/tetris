@@ -1,16 +1,14 @@
 package extetris.gui
 
 import scalafx.scene.Scene
-import scalafx.scene.layout.{VBox, HBox, StackPane, Region}
+import scalafx.scene.layout.{VBox, StackPane}
 import scalafx.scene.control.{Button, Label, ComboBox, Separator}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
 import scalafx.Includes._
 import scalafx.stage.FileChooser
-import scalafx.application.Platform
-import extetris.config.{VariantConfig, ScoringConfig, LevelConfig, PieceGenerationConfig}
-import extetris.pieces.PieceId
+import extetris.config.VariantConfig
 import extetris.runner.GameRunner
 import extetris.examples.ExampleVariants
 import scala.concurrent.ExecutionContext

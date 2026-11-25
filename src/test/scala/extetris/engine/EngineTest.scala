@@ -78,6 +78,33 @@ class EngineTest extends AnyFunSuite with Matchers:
     events.collect { case GameEvent.PieceHardDropped(_, _, _) => true } should not be empty
     events.collect { case GameEvent.PieceLocked(_) => true } should not be empty
   
+  test("Hard drop awards configured drop points"):
+    val config = VariantConfig.default
+    val state = createTestState(config)
+    var landed = state.currentPiece.get
+    var distance = 0
+    while state.board.canPlace(landed.move(0, 1)) do
+      landed = landed.move(0, 1)
+      distance += 1
+    
+    val (newState, events) = GameEngine.step(state, GameInput.HardDrop)
+    distance should be > 0
+    newState.score shouldBe config.scoring.hardDropScore(distance)
+    events.collect { case GameEvent.ScoreChanged(_, _) => true } should not be empty
+  
+  test("Soft drop awards configured drop points"):
+    val config = VariantConfig.default
+    val state = createTestState(config)
+    val (newState, events) = GameEngine.step(state, GameInput.MoveDown)
+    newState.score shouldBe config.scoring.softDropScore(1)
+    newState.lastAction shouldBe Some(GameInput.MoveDown)
+    events.collect { case GameEvent.ScoreChanged(_, _) => true } should not be empty
+  
+  test("Movement records the actual last action"):
+    val state = createTestState()
+    GameEngine.step(state, GameInput.MoveLeft)._1.lastAction shouldBe Some(GameInput.MoveLeft)
+    GameEngine.step(state, GameInput.MoveRight)._1.lastAction shouldBe Some(GameInput.MoveRight)
+  
   test("Piece locks and spawns next"):
     val config = VariantConfig.default.withEnabledPieces(Set(extetris.pieces.PieceId.O))
     val state = ExTetrisAPI.newGame(config, Some(12345L))

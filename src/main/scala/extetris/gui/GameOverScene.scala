@@ -21,7 +21,11 @@ class GameOverScene(finalState: GameState, mainMenu: MainMenuScene):
   private var shownRemaining = autoReturnSeconds.toInt
   private var returned = false
 
-  private val countdownLabel = new Label(s"Returning to main menu in $shownRemaining seconds..."):
+  private def countdownMessage(remaining: Int): String =
+    if remaining == 1 then "Returning to main menu in 1 second..."
+    else s"Returning to main menu in $remaining seconds..."
+
+  private val countdownLabel = new Label(countdownMessage(shownRemaining)):
     font = Font("Monospace", 13)
     textFill = Color.Gray
 
@@ -88,7 +92,7 @@ class GameOverScene(finalState: GameState, mainMenu: MainMenuScene):
       val remaining = math.max(0, math.ceil(autoReturnSeconds - elapsed).toInt)
       if remaining != shownRemaining then
         shownRemaining = remaining
-        countdownLabel.text = s"Returning to main menu in $remaining..."
+        countdownLabel.text = countdownMessage(remaining)
       if elapsed >= autoReturnSeconds then returnToMenu()
   }
 

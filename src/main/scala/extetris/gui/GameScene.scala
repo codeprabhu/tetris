@@ -1,29 +1,24 @@
 package extetris.gui
 
 import scalafx.scene.Scene
-import scalafx.scene.layout.{BorderPane, VBox, HBox, StackPane, GridPane, Pane, Region}
-import scalafx.scene.control.{Button, Label, MenuBar, Menu, MenuItem, SeparatorMenuItem, Separator}
-import scalafx.scene.shape.StrokeType
-import scalafx.collections.ObservableBuffer
-import scalafx.scene.shape.Rectangle
+import scalafx.scene.layout.{BorderPane, VBox, HBox, StackPane, Pane}
+import scalafx.scene.control.{Label, MenuBar, Menu, MenuItem, SeparatorMenuItem, Separator}
+import scalafx.scene.shape.{Rectangle, StrokeType}
 import scalafx.scene.paint.Color
 import scalafx.geometry.{Insets, Pos}
-import scalafx.animation.AnimationTimer
+import scalafx.animation.{AnimationTimer, PauseTransition}
+import scalafx.util.Duration
 import scalafx.stage.FileChooser
 import scalafx.Includes._
 import scalafx.scene.input.KeyCode
 import scalafx.application.Platform
-import extetris.model.{GameState, GameInput, GameStatus, Position}
+import extetris.model.{GameState, GameInput}
 import extetris.pieces.Piece
 import extetris.board.Board
 import extetris.runner.GameRunner
 import extetris.config.VariantConfig
-import scala.concurrent.ExecutionContext
-import scala.concurrent.ExecutionContextExecutor
 
 class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuScene):
-  given ExecutionContextExecutor = ExecutionContext.global
-  
   private val cellSize = 28
   private val boardWidth = variant.boardWidth
   private val boardHeight = variant.boardHeight
@@ -95,7 +90,7 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
           textFill = Color.Gray
       )
   
-  private var hasFocus = false
+  private var lastRenderedState: Option[GameState] = None
   private var gameOverShown = false
   
   val scene: Scene = new Scene:
@@ -252,13 +247,15 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
                 )
             )
         )
-      bottom = new HBox(10):
+      bottom = new VBox(4):
         alignment = Pos.Center
         padding = Insets(16, 0, 0, 0)
         children = Seq(
           new Label("← → Move  |  ↑ Rotate  |  ↓ Soft Drop  |  Space Hard Drop  |  C Hold  |  P Pause  |  Esc Menu"):
             font = scalafx.scene.text.Font("Monospace", 11)
             textFill = Color.Gray
+          ,
+          statusLabel
         )
     
     // Keyboard handling
@@ -284,12 +281,6 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
           case KeyCode.Escape => returnToMenu()
           case _ =>
   
-    onKeyReleased = e =>
-      if runner.state.isPlaying then
-        e.code match
-          case KeyCode.Down => () // Soft drop release handled by tick
-          case _ =>
-  
     // Request focus after scene is set on stage
     Platform.runLater { () =>
       scene.root.value.requestFocus()
@@ -297,13 +288,16 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
   
   private def updateView(): Unit =
     val state = runner.state
-    renderBoard(state.board)
-    renderGhostPiece(state)
-    renderCurrentPiece(state.currentPiece)
-    renderNextPiece(state.nextPiece)
-    renderHeldPiece(state.heldPiece)
-    updateLabels(state)
-    updateOverlays(state)
+    // Redraw only when something actually changed (input, gravity, pause...).
+    if !lastRenderedState.contains(state) then
+      lastRenderedState = Some(state)
+      renderBoard(state.board)
+      renderGhostPiece(state)
+      renderCurrentPiece(state.currentPiece)
+      renderNextPiece(state.nextPiece)
+      renderHeldPiece(state.heldPiece)
+      updateLabels(state)
+      updateOverlays(state)
   
   private def renderBoard(board: Board): Unit =
     boardPane.children.clear()
@@ -474,12 +468,13 @@ class GameScene(runner: GameRunner, variant: VariantConfig, mainMenu: MainMenuSc
   def showSettings(): Unit =
     MainApp.stage.scene = SettingsScene(this).scene
   
+  private val statusTimer = new PauseTransition(Duration(3000)):
+    onFinished = _ => statusLabel.text = ""
+
   def showStatus(message: String): Unit =
     statusLabel.text = message
-    new Thread(() => {
-      Thread.sleep(3000)
-      Platform.runLater(() => statusLabel.text = "")
-    }).start()
+    statusTimer.stop()
+    statusTimer.playFromStart()
   
   // Start the animation timer for rendering (60 FPS)
   private val renderTimer = AnimationTimer(t => updateView())

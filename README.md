@@ -10,7 +10,7 @@ An extensible Tetris platform for creating, configuring, and running Tetris-like
 - **Multiple Generation Strategies**: Uniform, weighted, and bag-based piece selection
 - **Deterministic Execution**: Seeded random generation for reproducible gameplay
 - **Save/Load & Replay**: Full game state persistence and deterministic replay
-- **Graphical Interface**: Playable ScalaFX GUI with menus, settings, and gameplay
+- **Graphical Interface**: Playable ScalaFX GUI with menus, settings, NEXT/HOLD previews, ghost piece, pause overlay, and a dedicated game-over screen
 - **Public API**: Clean extension points for creating custom variants
 
 ## Requirements
