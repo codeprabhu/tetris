@@ -5,20 +5,20 @@
 [debug] Collect excluded jar names start:
 [debug] Collect excluded jar names end. Took 0 ms
 [debug] Filter jars start:
-[debug] Filter jars end. Took 1 ms
+[debug] Filter jars end. Took 2 ms
 [debug] Collect and shade project classes start:
 [debug] Collect and shade project classes end. Took 8 ms
 [debug] Collect and shade dependency entries start:
-[debug] Collect and shade dependency entries end. Took 50 ms
+[debug] Collect and shade dependency entries end. Took 47 ms
 [debug] Collect renames start:
-[debug] Collect renames end. Took 95 ms
+[debug] Collect renames end. Took 123 ms
 [debug] Process renames start:
-[debug] Process renames end. Took 29 ms
+[debug] Process renames end. Took 44 ms
 [debug] Collect all merge strategies for cache check start:
-[debug] Collect all merge strategies for cache check end. Took 102 ms
+[debug] Collect all merge strategies for cache check end. Took 145 ms
 [debug] Building assembly jar due to changed inputs...
 [debug] Merge all conflicting jar entries (including those renamed) start:
-[debug] Merge all conflicting jar entries (including those renamed) end. Took 148 ms
+[debug] Merge all conflicting jar entries (including those renamed) end. Took 233 ms
 [debug] Report merge results start:
 [info] 75 file(s) merged using strategy 'Discard' (Run the task at debug level to see the details)
 [debug] 
@@ -206,16 +206,16 @@
 [debug] Merge origins:
 [debug]   Jar name = javafx-graphics-21.jar, jar org = org.openjfx, entry target = META-INF/substrate/config/reflectionconfig-x86_64-darwin.json
 [debug]   Jar name = javafx-web-21.jar, jar org = org.openjfx, entry target = META-INF/substrate/config/reflectionconfig-x86_64-darwin.json
-[debug] Report merge results end. Took 27 ms
+[debug] Report merge results end. Took 35 ms
 [debug] Finding remaining conflicts that were not merged start:
-[debug] Finding remaining conflicts that were not merged end. Took 164 ms
+[debug] Finding remaining conflicts that were not merged end. Took 169 ms
 [debug] Sort/Parallelize merged entries start:
-[debug] Sort/Parallelize merged entries end. Took 47 ms
+[debug] Sort/Parallelize merged entries end. Took 46 ms
 [debug] Create jar start:
-[debug] Create jar end. Took 14408 ms
+[debug] Create jar end. Took 15638 ms
 [debug] Hash newly-built Jar start:
-[debug] Hash newly-built Jar end. Took 140 ms
+[debug] Hash newly-built Jar end. Took 144 ms
 [info] Built: /home/shrivathssp/Desktop/tetris/target/scala-3.3.3/extetris-platform-assembly-0.1.0-SNAPSHOT.jar
-[info] Jar hash: e228f7469759888f1ab2341826e37840ce046f4e
+[info] Jar hash: 0866c0592091458f8208588a169bc1174e6e9aed
 [debug] Close library jar references start:
-[debug] Close library jar references end. Took 1 ms
+[debug] Close library jar references end. Took 2 ms

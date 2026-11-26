@@ -1,33 +1,33 @@
 [debug] Created transactional ClassFileManager with tempDir = /home/shrivathssp/Desktop/tetris/target/scala-3.3.3/test-classes.bak
 [debug] About to delete class files:
-[debug] 	GameOverProbe$$anon$5.class
-[debug] 	GameOverProbe$$anon$3.class
-[debug] 	GameOverProbe$$anon$4.class
-[debug] 	GameOverProbe$$anon$2.class
-[debug] 	GameOverProbe$.class
-[debug] 	GameOverProbe.class
-[debug] 	GameOverProbe$$anon$1.class
-[debug] 	GameOverProbe$$anon$5.tasty
-[debug] 	GameOverProbe$$anon$3.tasty
-[debug] 	GameOverProbe$$anon$4.tasty
-[debug] 	GameOverProbe$$anon$2.tasty
-[debug] 	GameOverProbe$.tasty
-[debug] 	GameOverProbe.tasty
-[debug] 	GameOverProbe$$anon$1.tasty
+[debug] 	PolishProbe$.class
+[debug] 	PolishProbe.class
+[debug] 	PolishProbe$$anon$3.class
+[debug] 	PolishProbe$$anon$2.class
+[debug] 	PolishProbe$$anon$4.class
+[debug] 	PolishProbe$$anon$5.class
+[debug] 	PolishProbe$$anon$1.class
+[debug] 	PolishProbe$.tasty
+[debug] 	PolishProbe.tasty
+[debug] 	PolishProbe$$anon$3.tasty
+[debug] 	PolishProbe$$anon$2.tasty
+[debug] 	PolishProbe$$anon$4.tasty
+[debug] 	PolishProbe$$anon$5.tasty
+[debug] 	PolishProbe$$anon$1.tasty
 [debug] We backup class files:
-[debug] 	GameOverProbe$$anon$5.class
-[debug] 	GameOverProbe$$anon$3.class
-[debug] 	GameOverProbe$$anon$4.class
-[debug] 	GameOverProbe$$anon$2.class
-[debug] 	GameOverProbe$.class
-[debug] 	GameOverProbe.class
-[debug] 	GameOverProbe$$anon$1.class
-[debug] 	GameOverProbe$$anon$5.tasty
-[debug] 	GameOverProbe$$anon$3.tasty
-[debug] 	GameOverProbe$$anon$4.tasty
-[debug] 	GameOverProbe$$anon$2.tasty
-[debug] 	GameOverProbe$.tasty
-[debug] 	GameOverProbe.tasty
-[debug] 	GameOverProbe$$anon$1.tasty
+[debug] 	PolishProbe$.class
+[debug] 	PolishProbe.class
+[debug] 	PolishProbe$$anon$3.class
+[debug] 	PolishProbe$$anon$2.class
+[debug] 	PolishProbe$$anon$4.class
+[debug] 	PolishProbe$$anon$5.class
+[debug] 	PolishProbe$$anon$1.class
+[debug] 	PolishProbe$.tasty
+[debug] 	PolishProbe.tasty
+[debug] 	PolishProbe$$anon$3.tasty
+[debug] 	PolishProbe$$anon$2.tasty
+[debug] 	PolishProbe$$anon$4.tasty
+[debug] 	PolishProbe$$anon$5.tasty
+[debug] 	PolishProbe$$anon$1.tasty
 [debug] Registering generated classes:
 [debug] Removing the temporary directory used for backing up class files: /home/shrivathssp/Desktop/tetris/target/scala-3.3.3/test-classes.bak
